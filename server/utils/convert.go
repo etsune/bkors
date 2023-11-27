@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/etsune/bkors/models"
+	"github.com/etsune/bkors/server/models"
 )
 
 func ConvertEntryToMultilineTxt(e models.DBEntry) string {

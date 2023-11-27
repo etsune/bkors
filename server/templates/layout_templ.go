@@ -11,8 +11,8 @@ import "io"
 import "bytes"
 
 import (
-	"github.com/etsune/bkors/models"
-	"github.com/etsune/bkors/templates/components"
+	"github.com/etsune/bkors/server/models"
+	"github.com/etsune/bkors/server/templates/components"
 )
 
 // contentSecurityPolicy is the Content-Security-Policy header for htmx and Tailwind CSS.

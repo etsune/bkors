@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/etsune/bkors/config"
-	"github.com/etsune/bkors/models"
+	"github.com/etsune/bkors/server/config"
+	"github.com/etsune/bkors/server/models"
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

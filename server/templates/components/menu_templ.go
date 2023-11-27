@@ -10,7 +10,7 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/etsune/bkors/models"
+import "github.com/etsune/bkors/server/models"
 
 var menu = [][2]string{
 	{"Github", "https://github.com/etsune/bkors"},

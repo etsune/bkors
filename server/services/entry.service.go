@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/etsune/bkors/models"
-	"github.com/etsune/bkors/utils"
+	"github.com/etsune/bkors/server/models"
+	"github.com/etsune/bkors/server/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

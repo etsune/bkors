@@ -11,8 +11,8 @@ import "io"
 import "bytes"
 
 import (
-	"github.com/etsune/bkors/templates"
-	"github.com/etsune/bkors/templates/components"
+	"github.com/etsune/bkors/server/templates"
+	"github.com/etsune/bkors/server/templates/components"
 )
 
 func Index(p *PageOptions) templ.Component {

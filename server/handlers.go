@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/etsune/bkors/models"
-	"github.com/etsune/bkors/services"
-	"github.com/etsune/bkors/templates/pages"
+	"github.com/etsune/bkors/server/models"
+	"github.com/etsune/bkors/server/services"
+	"github.com/etsune/bkors/server/templates/pages"
 	"github.com/labstack/echo/v4"
 )
 

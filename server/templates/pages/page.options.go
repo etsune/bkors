@@ -1,6 +1,6 @@
 package pages
 
-import "github.com/etsune/bkors/models"
+import "github.com/etsune/bkors/server/models"
 
 type PageOptions struct {
 	user *models.DBUser

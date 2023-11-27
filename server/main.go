@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/etsune/bkors/config"
-	"github.com/etsune/bkors/services"
+	"github.com/etsune/bkors/server/config"
+	"github.com/etsune/bkors/server/services"
 
 	// echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"

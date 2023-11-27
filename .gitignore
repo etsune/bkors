@@ -24,5 +24,6 @@ server/assets/img1
 
 # Go workspace file
 go.work
+go.work.sum
 
 app.env

@@ -11,7 +11,7 @@ import "io"
 import "bytes"
 
 import (
-	"github.com/etsune/bkors/templates"
+	"github.com/etsune/bkors/server/templates"
 )
 
 func EditsPage(p *PageOptions) templ.Component {

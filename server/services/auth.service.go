@@ -3,7 +3,7 @@ package services
 import (
 	"fmt"
 
-	"github.com/etsune/bkors/config"
+	"github.com/etsune/bkors/server/config"
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

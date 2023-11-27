@@ -11,7 +11,7 @@ import "io"
 import "bytes"
 
 import (
-	"github.com/etsune/bkors/templates"
+	"github.com/etsune/bkors/server/templates"
 )
 
 func DownloadPage(p *PageOptions) templ.Component {

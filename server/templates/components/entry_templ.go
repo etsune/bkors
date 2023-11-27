@@ -11,7 +11,7 @@ import "io"
 import "bytes"
 
 import (
-	"github.com/etsune/bkors/models"
+	"github.com/etsune/bkors/server/models"
 )
 
 func Entry(entry models.DBEntry) templ.Component {

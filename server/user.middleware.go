@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/etsune/bkors/config"
-	"github.com/etsune/bkors/services"
+	"github.com/etsune/bkors/server/config"
+	"github.com/etsune/bkors/server/services"
 	"github.com/labstack/echo/v4"
 )
 
