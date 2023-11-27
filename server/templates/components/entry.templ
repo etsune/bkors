@@ -1,0 +1,51 @@
+package components
+
+import (
+	"github.com/etsune/bkors/models"
+)
+
+templ Entry(entry models.DBEntry) {
+  <div class={ "border rounded-md p-4 text-base", templ.KV("border-l-orange-500 border-l-2", false) } lang="kr"> //!entry.IsReviewed
+    <div class="pb-3">
+      <div class="whitespace-nowrap text-lg/none">
+        <div class="inline-block font-semibold">
+          <span>{ entry.Entry.Hangul }</span>
+        </div>
+        if len(entry.Entry.HomographNumber) > 0 {
+          <div class="inline-block border-zinc-500 align-super">
+            <span class="font-serif mx-1 text-xs">{ entry.Entry.HomographNumber }</span>
+          </div>
+        }
+        if len(entry.Entry.Hanja) > 0 {
+          <span class="text-xl text-zinc-500">〔{ entry.Entry.Hanja }〕</span>
+        }
+      </div>
+      <div class="whitespace-pre-wrap">{ entry.Entry.Body }</div>
+    </div>
+    <hr />
+    <img class="w-2/3 h-auto mt-4" src={ "/static/img/" + entry.Image } />
+    // <hr />
+    // @Editor(entry)
+  </div>
+}
+
+templ Entries(entries *[]models.DBEntry) {
+  if len(*entries) > 0 {
+    for _, entry := range *entries {
+      @Entry(entry)
+    }
+  } else {
+    <div>Статей по запросу не найдено.</div>
+  }
+}
+
+templ Editor(entry models.DBEntry) {
+  <div class="max-w-xl w-full mx-auto p-2">
+    <label for="editor" class="leading-6 block">Редактор:</label>
+    <div class="mt-2">
+      <textarea rows="10" name="editor" class="block w-full border-2 rounded-md ring-gray-300/100">
+        { entry.Entry.Body }
+      </textarea>
+    </div>
+  </div>
+}

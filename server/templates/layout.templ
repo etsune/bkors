@@ -1,0 +1,45 @@
+package templates
+
+import (
+	"github.com/etsune/bkors/models"
+	"github.com/etsune/bkors/templates/components"
+)
+
+// contentSecurityPolicy is the Content-Security-Policy header for htmx and Tailwind CSS.
+// var contentSecurityPolicy = "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: http://cdn.tailwindcss.com; connect-src 'self' ws://localhost:*;"
+// options *TemplateOptions
+
+templ Layout(u *models.DBUser) {
+	<!doctype html>
+	<html>
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>БКоРС — проект оцифровки Большого корейско-русского словаря</title>
+			<link rel="icon" type="image/png" href="/static/favicon1.png" />
+			<link rel="preconnect" href="https://fonts.googleapis.com"></link>
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin></link>
+			<link href="https://fonts.googleapis.com/css2?family=Exo+2:ital@0;1&family=Nanum+Gothic&family=Nanum+Myeongjo&display=swap" rel="stylesheet"></link>
+			<script src="https://cdn.tailwindcss.com"></script>
+			<script>
+				tailwind.config = {
+					theme: {
+						extend: {
+							fontFamily: {
+								display: ['"Exo 2"', '"Nanum Myeongjo"', '"Nanum Gothic"', 'sans']
+							}
+						}
+					}
+				}
+			</script>
+		</head>
+		<body>
+			<div class="container flex flex-col gap-4 p-4 mx-auto my-10 max-w-6xl md:leading-relaxed font-display">
+				
+				@components.Menu(u)
+				{ children... }
+
+			</div>
+		</body>
+	</html>
+}

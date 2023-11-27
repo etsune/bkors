@@ -1,0 +1,14 @@
+package pages
+
+import (
+	"github.com/etsune/bkors/models"
+	"github.com/etsune/bkors/templates"
+	"github.com/etsune/bkors/templates/components"
+)
+
+templ Search(entries *[]models.DBEntry, term string, p *PageOptions) {
+  @templates.Layout(p.user) {
+		@components.SearchBar(term)
+    @components.Entries(entries)
+  }
+}

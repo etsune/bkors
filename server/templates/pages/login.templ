@@ -1,0 +1,22 @@
+package pages
+
+import (
+	"github.com/etsune/bkors/templates"
+)
+
+templ Login(p *PageOptions) {
+  @templates.Layout(p.user) {
+    <div class="flex flex-col content-center">
+      <form method="post">
+        <div class="flex flex-col flex-auto max-w-md mx-auto gap-2">
+          <label for="username">Логин</label>
+          <input class="border rounded-md p-3" type="text" id="username" name="username" maxlength="30" autofocus />
+          <label for="password">Пароль</label>
+          <input class="border rounded-md p-3" type="password" id="password" name="password" maxlength="30" autofocus />
+          <button class="border rounded-md" id="submit" type="submit">Войти</button>
+        </div>
+      </form>
+      <div class="self-center pt-4">Если логин не существует в базе, то аккаунт будет создан автоматически.</div>
+    </div>
+  }
+}

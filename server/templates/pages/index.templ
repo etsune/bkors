@@ -1,0 +1,15 @@
+package pages
+
+import (
+	"github.com/etsune/bkors/templates"
+	"github.com/etsune/bkors/templates/components"
+)
+
+templ Index(p *PageOptions) {
+  @templates.Layout(p.user) {
+		@components.SearchBar("")
+		<div>
+			Большой корейско-русский словарь в двух томах, под редакцией Л.Б. Никольского и Цой Ден Ху, М: 1976
+		</div>
+  }
+}
