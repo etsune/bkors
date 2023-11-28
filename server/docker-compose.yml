@@ -1,13 +1,21 @@
 version: '3'
 services:
+  bkors:
+    container_name: bkors
+    build: .
+    ports:
+      - '1363:1363'
+    depends_on:
+      - mongodb
+    restart: always
   mongodb:
     image: mongo
     container_name: mongodb
     restart: always
     env_file:
       - ./app.env
-    ports:
-      - '27017:27017'
+    # ports:
+    #   - '27017:27017'
     volumes:
       - mongodb:/var/mongodb
 volumes:
