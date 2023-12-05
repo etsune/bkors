@@ -25,6 +25,19 @@ func NewEntryService(ctx context.Context, col *mongo.Collection) *EntryService {
 	return &EntryService{col, ctx}
 }
 
+func (e *EntryService) GetEntriesForPage(volume, page int) (*[]models.DBEntry, error) {
+	filter := bson.M{"placement.v": volume, "placement.pg": page}
+	cursor, err := e.col.Find(e.ctx, filter, options.Find().SetLimit(1000))
+	if err != nil {
+		return nil, err
+	}
+	var res []models.DBEntry
+	if err = cursor.All(e.ctx, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
 func (e *EntryService) SearchEntries(term string) ([]models.DBEntry, error) {
 	term = strings.TrimSpace(term)
 	if len(term) == 0 {
@@ -188,7 +201,7 @@ func (e *EntryService) ImportFile(file multipart.File) error {
 			}
 			curEntry.Entry.Hangul = split[0]
 			curEntry.Entry.Hanja = split[1]
-			curEntry.Entry.HomographNumber = split[2]
+			curEntry.Entry.HomonymicNumber = split[2]
 			curEntry.Entry.Transcription = split[3]
 			curEntry.HeaderSearch = []string{}
 

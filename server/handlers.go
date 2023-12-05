@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/etsune/bkors/server/models"
@@ -15,10 +16,7 @@ type AppHandler struct {
 	entryService *services.EntryService
 	authService  *services.AuthService
 	userService  *services.UserService
-}
-
-func NewAppHandler(e *services.EntryService) *AppHandler {
-	return &AppHandler{entryService: e}
+	sheetService *services.SheetService
 }
 
 func (h *AppHandler) IndexPageHandler(c echo.Context) error {
@@ -56,6 +54,25 @@ func (h *AppHandler) DownloadPageHandler(c echo.Context) error {
 func (h *AppHandler) EditsPageHandler(c echo.Context) error {
 	pageOptions := pages.NewPageOptions(getCtxUserdata(c))
 	return pages.EditsPage(pageOptions).Render(context.Background(), c.Response().Writer)
+}
+
+func (h *AppHandler) SheetPageHandler(c echo.Context) error {
+	pageOptions := pages.NewPageOptions(getCtxUserdata(c))
+	dict, numPar := c.Param("dict"), c.Param("num")
+
+	num, _ := strconv.Atoi(numPar)
+
+	sheet, err := h.sheetService.Get(dict, num)
+	if err != nil {
+		return err
+	}
+
+	entries, err := h.entryService.GetEntriesForPage(sheet.Volume, sheet.Page)
+	if err != nil {
+		return err
+	}
+
+	return pages.SheetPage(pageOptions, sheet, entries).Render(context.Background(), c.Response().Writer)
 }
 
 func (h *AppHandler) ImportListHandler(c echo.Context) error {
@@ -98,10 +115,10 @@ func (h *AppHandler) SearchPageHandler(c echo.Context) error {
 }
 
 func (h *AppHandler) ExportRequestHandler(c echo.Context) error {
-	user := getCtxUserdata(c)
-	if user == nil || !user.IsAdmin {
-		return c.String(http.StatusBadRequest, "user has no access")
-	}
+	// user := getCtxUserdata(c)
+	// if user == nil || !user.IsAdmin {
+	// 	return c.String(http.StatusBadRequest, "user has no access")
+	// }
 	data := []byte(h.entryService.ExportEntries())
 	return c.Blob(http.StatusOK, "text/csv", data)
 }

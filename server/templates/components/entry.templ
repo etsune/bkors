@@ -4,16 +4,24 @@ import (
 	"github.com/etsune/bkors/server/models"
 )
 
+script showEditor(id string) {
+    if ( document.getElementById(id).className.match(/(?:^|\s)hidden(?!\S)/) ) {
+        document.getElementById(id).className = "";
+    } else {
+        document.getElementById(id).className = "hidden";
+    }
+}
+
 templ Entry(entry models.DBEntry) {
-  <div class={ "border rounded-md p-4 text-base", templ.KV("border-l-orange-500 border-l-2", false) } lang="kr"> //!entry.IsReviewed
+  <div class={ "border rounded-md p-4 text-base relative", templ.KV("border-l-orange-500 border-l-2", !entry.IsReviewed) } lang="kr"> //
     <div class="pb-3">
       <div class="whitespace-nowrap text-lg/none">
         <div class="inline-block font-semibold">
           <span>{ entry.Entry.Hangul }</span>
         </div>
-        if len(entry.Entry.HomographNumber) > 0 {
+        if len(entry.Entry.HomonymicNumber) > 0 {
           <div class="inline-block border-zinc-500 align-super">
-            <span class="font-serif mx-1 text-xs">{ entry.Entry.HomographNumber }</span>
+            <span class="font-serif mx-1 text-xs">{ entry.Entry.HomonymicNumber }</span>
           </div>
         }
         if len(entry.Entry.Hanja) > 0 {
@@ -21,11 +29,16 @@ templ Entry(entry models.DBEntry) {
         }
       </div>
       <div class="whitespace-pre-wrap">{ entry.Entry.Body }</div>
+      <div class="absolute top-3 right-2">
+        <span onCLick={showEditor("editor-" + entry.Id.Hex())}>Editor</span>
+      </div>
     </div>
     <hr />
     <img class="w-2/3 h-auto mt-4" src={ "/static/img/" + entry.Image } />
-    // <hr />
-    // @Editor(entry)
+    <div id={"editor-" + entry.Id.Hex()} class="hidden">
+      <hr />
+      @Editor(entry)
+    </div>
   </div>
 }
 
@@ -40,8 +53,28 @@ templ Entries(entries *[]models.DBEntry) {
 }
 
 templ Editor(entry models.DBEntry) {
-  <div class="max-w-xl w-full mx-auto p-2">
-    <label for="editor" class="leading-6 block">Редактор:</label>
+  <div class="max-w-3xl w-full mx-auto p-2">
+    <div class="block pt-2">
+      <span for="" class="inline pr-2">Отредактировано:</span>
+      <input class="border rounded-md p-1 inline" type="checkbox" checked?={ entry.IsReviewed } />
+    </div>
+    <div class="block pt-2">
+      <span for="" class="inline pr-2">Хангыль:</span>
+      <input class="border rounded-md p-1 inline" value={ entry.Entry.Hangul } />
+    </div>
+    <div class="block pt-2">
+      <span for="" class="inline pr-1">Ханча:</span>
+      <input class="border rounded-md p-1 inline" value={ entry.Entry.Hanja } />
+    </div>
+    <div class="block pt-2">
+      <span for="" class="inline pr-3">Номер омонима:</span>
+      <input class="border rounded-md p-1 inline" value={ entry.Entry.HomonymicNumber } />
+    </div>
+    <div class="block pt-2">
+      <span for="" class="inline pr-2">Транскрипция:</span>
+      <input class="border rounded-md p-1 inline" value={ entry.Entry.Transcription } />
+    </div>
+    <label for="editor" class="leading-6 block pt-2">Текст статьи:</label>
     <div class="mt-2">
       <textarea rows="10" name="editor" class="block w-full border-2 rounded-md ring-gray-300/100">
         { entry.Entry.Body }

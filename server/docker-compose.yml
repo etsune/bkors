@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   bkors:
     container_name: bkors
@@ -7,6 +7,8 @@ services:
       - '1363:1363'
     depends_on:
       - mongodb
+    env_file:
+      - ./app.env
     restart: always
   mongodb:
     image: mongo

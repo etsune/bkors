@@ -9,7 +9,7 @@ import (
 type DictEntry struct {
 	Hangul          string `bson:"hangul"`
 	Hanja           string `bson:"hanja"`
-	HomographNumber string `bson:"hn"`
+	HomonymicNumber string `bson:"hn"`
 	Transcription   string `bson:"ts"`
 	Body            string `bson:"body"`
 }
@@ -43,6 +43,17 @@ type DBEntry struct {
 	PlacementSort int                `bson:"psort"`
 	CreatedAt     time.Time          `bson:"created_at"`
 	UpdatedAt     time.Time          `bson:"updated_at"`
+}
+
+type DBPage struct {
+	Id         primitive.ObjectID `bson:"_id"`
+	Dictionary string             `bson:"dict"`
+	Volume     int                `bson:"vol"`
+	Page       int                `bson:"p"`
+	File       string             `bson:"file"`
+	Width      int                `bson:"w"`
+	Height     int                `bson:"h"`
+	Num        int                `bson:"num"`
 }
 
 // Body - loan source , senses-examples(kor, rus)

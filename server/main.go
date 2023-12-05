@@ -41,6 +41,7 @@ func main() {
 		entryService: services.NewEntryService(context.TODO(), dbClient.Database("bkors").Collection("entries")),
 		authService:  services.NewAuthService(config),
 		userService:  services.NewUserService(context.TODO(), dbClient.Database("bkors").Collection("users"), config),
+		sheetService: services.NewSheetService(context.TODO(), dbClient.Database("bkors").Collection("pages")),
 	}
 
 	e.Use(SetRequestUser(handler.userService, &config))
@@ -54,5 +55,5 @@ func main() {
 
 	// handler.entryService.ExportEntriesToTxt()
 
-	e.Logger.Fatal(e.Start("127.0.0.1:" + config.Port))
+	e.Logger.Fatal(e.Start(":" + config.Port))
 }
