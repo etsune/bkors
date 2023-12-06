@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -73,6 +74,22 @@ func (h *AppHandler) SheetPageHandler(c echo.Context) error {
 	}
 
 	return pages.SheetPage(pageOptions, sheet, entries).Render(context.Background(), c.Response().Writer)
+}
+
+func (h *AppHandler) ExportPageToTxt(c echo.Context) error {
+	volPar, pagePar := c.Param("vol"), c.Param("page")
+
+	vol, _ := strconv.Atoi(volPar)
+	page, _ := strconv.Atoi(pagePar)
+
+	res, err := h.entryService.ExportPageToTxt(vol, page)
+	if err != nil {
+		return err
+	}
+
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextPlainCharsetUTF8)
+	c.Response().Header().Set(echo.HeaderContentDisposition, fmt.Sprintf("attachment;filename=\"bkors-%d-%d.txt\"", vol, page))
+	return c.Blob(http.StatusOK, "text/plain", res)
 }
 
 func (h *AppHandler) ImportListHandler(c echo.Context) error {

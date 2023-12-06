@@ -9,6 +9,7 @@ func router(e *echo.Echo, h *AppHandler) {
 	e.GET("/download", h.DownloadPageHandler)     // DownloadPage
 	e.GET("/edits", h.EditsPageHandler)           // EditsPage
 	e.GET("/page/:dict/:num", h.SheetPageHandler) // DictionaryPage
+	e.GET("/page-export/:vol/:page", h.ExportPageToTxt)
 	// POST - get search component
 
 	e.GET("/login", h.LoginPageHandler)

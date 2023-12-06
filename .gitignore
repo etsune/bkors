@@ -5,6 +5,7 @@ vostokopedia
 server/data
 server/assets/img
 server/assets/png
+server/assets/img.zip
 server/assets/img1
 
 # Binaries for programs and plugins
@@ -28,3 +29,5 @@ go.work
 go.work.sum
 
 app.env
+
+.idea

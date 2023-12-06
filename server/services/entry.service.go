@@ -99,6 +99,20 @@ func (e *EntryService) ExportEntries() string {
 	return res
 }
 
+func (e *EntryService) ExportPageToTxt(vol, page int) ([]byte, error) {
+	entries, err := e.GetEntriesForPage(vol, page)
+	if err != nil {
+		return nil, err
+	}
+
+	currentText := ""
+	for _, entry := range *entries {
+		currentText += utils.ConvertEntryToMultilineTxt(entry) + "\n\n"
+	}
+
+	return []byte(currentText), nil
+}
+
 func (e *EntryService) ExportEntriesToTxt() error {
 	filter := bson.D{}
 	opts := options.Find().SetSort(bson.D{{"psort", 1}}).SetLimit(1000)
