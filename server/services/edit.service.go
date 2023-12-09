@@ -55,6 +55,7 @@ func (s *EditService) Approve(editIdStr string) error {
 	entry.Entry.Hangul = edit.Result.Hangul
 	entry.Entry.Transcription = edit.Result.Transcription
 	entry.Entry.HomonymicNumber = edit.Result.HomonymicNumber
+	entry.Entry.Body = edit.Result.Body
 	entry.IsReviewed = edit.Result.IsReviewed
 	entry.UpdatedAt = time.Now()
 
