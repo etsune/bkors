@@ -111,3 +111,11 @@ type DBUser struct {
 	CreatedAt      time.Time          `bson:"created_at"`
 	UpdatedAt      time.Time          `bson:"updated_at"`
 }
+
+type DBDownload struct {
+	Id       primitive.ObjectID `bson:"_id"`
+	Filename string             `bson:"filename"`
+	Path     string             `bson:"path"`
+	Time     string             `bson:"time"`
+	Size     string             `bson:"size"`
+}

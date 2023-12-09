@@ -2,12 +2,19 @@ package pages
 
 import (
 	"github.com/etsune/bkors/server/templates"
+	"github.com/etsune/bkors/server/models"
 )
 
-templ DownloadPage(p *PageOptions) {
+templ DownloadPage(p *PageOptions, dls *[]models.DBDownload) {
 	@templates.Layout(p.user) {
 		<div class="">
-			Страница в разработке
+			for _, dl := range *dls {
+				<span>
+					Скачать:
+					<a class="text-blue-500" href={ templ.URL("/" + dl.Path + dl.Filename) }>{ dl.Filename }</a>
+					({ dl.Size }, <span class="text-zinc-400">обновлено { dl.Time }</span>)
+				</span>
+			}
 		</div>
 	}
 }

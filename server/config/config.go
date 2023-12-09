@@ -5,8 +5,9 @@ import (
 )
 
 type Config struct {
-	DBUri string `mapstructure:"MONGODB_LOCAL_URI"`
-	Port  string `mapstructure:"PORT"`
+	DBUri     string `mapstructure:"MONGODB_LOCAL_URI"`
+	Port      string `mapstructure:"PORT"`
+	ExportDir string `mapstructure:"EXPORT_DIR"`
 
 	AccessTokenPrivateKey string `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
 }

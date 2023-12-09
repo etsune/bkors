@@ -17,11 +17,12 @@ import (
 )
 
 type AppHandler struct {
-	entryService *services.EntryService
-	authService  *services.AuthService
-	userService  *services.UserService
-	sheetService *services.SheetService
-	editService  *services.EditService
+	entryService    *services.EntryService
+	authService     *services.AuthService
+	userService     *services.UserService
+	sheetService    *services.SheetService
+	editService     *services.EditService
+	downloadService *services.DownloadService
 }
 
 func (h *AppHandler) IndexPageHandler(c echo.Context) error {
@@ -53,7 +54,11 @@ func (h *AppHandler) LoginPageHandler(c echo.Context) error {
 
 func (h *AppHandler) DownloadPageHandler(c echo.Context) error {
 	pageOptions := pages.NewPageOptions(getCtxUserdata(c))
-	return pages.DownloadPage(pageOptions).Render(context.Background(), c.Response().Writer)
+	dls, err := h.downloadService.GetAll()
+	if err != nil {
+		return err
+	}
+	return pages.DownloadPage(pageOptions, dls).Render(context.Background(), c.Response().Writer)
 }
 
 func (h *AppHandler) EditsPageHandler(c echo.Context) error {
