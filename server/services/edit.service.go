@@ -2,12 +2,14 @@ package services
 
 import (
 	"context"
+	"errors"
 	"github.com/etsune/bkors/server/models"
 	"github.com/etsune/bkors/server/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -53,8 +55,19 @@ func (s *EditService) Approve(editIdStr string) error {
 	entry.Entry.Hangul = edit.Result.Hangul
 	entry.Entry.Transcription = edit.Result.Transcription
 	entry.Entry.HomonymicNumber = edit.Result.HomonymicNumber
-	entry.Entry.Body = edit.Result.Body
 	entry.IsReviewed = edit.Result.IsReviewed
+	entry.UpdatedAt = time.Now()
+
+	entry.HeaderSearch = []string{}
+
+	if len(entry.Entry.Hangul) > 0 {
+		entry.HeaderSearch = append(entry.HeaderSearch, strings.Split(entry.Entry.Hangul, ",")...)
+	}
+	if len(entry.Entry.Hanja) > 0 {
+		entry.HeaderSearch = append(entry.HeaderSearch, strings.Split(entry.Entry.Hanja, ",")...)
+	}
+
+	entry.BodySearch = strings.Join(entry.HeaderSearch, ",") + "\n" + entry.Entry.Body
 
 	filter := bson.D{{"_id", entry.Id}}
 	if _, err = s.ecol.ReplaceOne(s.ctx, filter, entry); err != nil {
@@ -118,11 +131,23 @@ func (s *EditService) CreateEdit(edit *models.EditEntry, entryId primitive.Objec
 		Meta:            utils.GetMeta(&entry.Placement),
 	}
 
-	edit.Hangul = replaceSymbols(edit.Hangul)
-	edit.Hanja = replaceSymbols(edit.Hanja)
-	edit.Transcription = replaceSymbols(edit.Transcription)
-	edit.Body = replaceSymbols(edit.Body)
+	re := regexp.MustCompile(`\r*\n+`)
+
+	edit.Hangul = strings.TrimSpace(replaceSymbols(edit.Hangul))
+	edit.Hanja = strings.TrimSpace(replaceSymbols(edit.Hanja))
+	edit.Transcription = strings.TrimSpace(replaceSymbols(edit.Transcription))
+	edit.HomonymicNumber = strings.TrimSpace(edit.HomonymicNumber)
+	edit.Body = strings.TrimSpace(replaceSymbols(edit.Body))
+	edit.Body = re.ReplaceAllString(edit.Body, "\n")
 	edit.Meta = oldedit.Meta
+
+	if edit.Hangul == oldedit.Hangul &&
+		edit.Hanja == oldedit.Hanja &&
+		edit.Transcription == oldedit.Transcription &&
+		edit.HomonymicNumber == oldedit.HomonymicNumber &&
+		edit.Body == oldedit.Body {
+		return primitive.NewObjectID(), errors.New("правка ничего не исправляет")
+	}
 
 	dbedit := models.DBEdit{
 		Id:        primitive.NewObjectID(),

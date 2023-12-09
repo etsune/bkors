@@ -167,7 +167,7 @@ func (h *AppHandler) CreateEdit(c echo.Context) error {
 
 	editId, err := h.editService.CreateEdit(edit, entryId, username)
 	if err != nil {
-		return c.HTML(http.StatusOK, err.Error())
+		return components.ErrWithMsg(err.Error()).Render(context.Background(), c.Response().Writer)
 	}
 
 	if user != nil && user.HasAutoApprove {
