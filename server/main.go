@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/etsune/bkors/server/config"
 	"github.com/etsune/bkors/server/services"
-	"time"
 
 	// echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -65,8 +66,7 @@ func exportJob(exportDir string, e *services.DownloadService) {
 }
 
 func startExport(exportDir string, e *services.DownloadService) {
-	loc, _ := time.LoadLocation("Europe/Moscow")
-	currentTime := time.Now().In(loc)
+	currentTime := time.Now()
 	fmt.Println("Exporting ")
 	filename := fmt.Sprintf("bkors-export-%s.txt", currentTime.Format("2006-01-02_15-04-05"))
 	_ = e.ExportAll(filename, exportDir, currentTime)
