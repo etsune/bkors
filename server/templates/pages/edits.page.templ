@@ -19,7 +19,7 @@ templ Edit(edit models.DBEdit, isAdmin bool) {
 		<div class="flex flex-wrap gap-4 justify-between">
 			<div class="basis-full ml-2">
 				{ edit.Author },
-				<span class="text-zinc-400">{ utils.ConvertTime(edit.CreatedAt) } MSK, </span>
+				<span class="text-zinc-400">{ utils.ConvertTime(edit.CreatedAt) } UTC, </span>
 				@EditStatus(edit.Status)
 			</div>
 			<div class="basis-full ml-2">

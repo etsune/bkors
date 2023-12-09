@@ -3,9 +3,6 @@ package utils
 import (
 	"context"
 	"fmt"
-	"github.com/a-h/templ"
-	"github.com/etsune/bkors/server/models"
-	"github.com/sergi/go-diff/diffmatchpatch"
 	"hash/crc32"
 	"html"
 	"io"
@@ -13,6 +10,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/a-h/templ"
+	"github.com/etsune/bkors/server/models"
+	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 func ConvertEntryToMultilineTxt(e models.DBEntry) string {
@@ -56,8 +57,7 @@ func CompareEdits(src, res string) string {
 }
 
 func ConvertTime(tc time.Time) string {
-	loc, _ := time.LoadLocation("Europe/Moscow")
-	return tc.In(loc).Format("2006-01-02 15:04:05")
+	return tc.Format("2006-01-02 15:04:05")
 }
 
 func ConvertEditToText(edit models.EditEntry) string {
