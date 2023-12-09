@@ -1,11 +1,18 @@
 package utils
 
 import (
+	"context"
 	"fmt"
+	"github.com/a-h/templ"
+	"github.com/etsune/bkors/server/models"
+	"github.com/sergi/go-diff/diffmatchpatch"
+	"hash/crc32"
+	"html"
+	"io"
+	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/etsune/bkors/server/models"
+	"time"
 )
 
 func ConvertEntryToMultilineTxt(e models.DBEntry) string {
@@ -18,6 +25,90 @@ func ConvertEntryToMultilineTxt(e models.DBEntry) string {
 	body := strings.ReplaceAll(e.Entry.Body, "\n\n", "\n")
 	res := fmt.Sprintf("%s\n%s\n%s", dataStr, header, body)
 	return res
+}
+
+func GetAnonymName(name string) string {
+	crc := crc32.ChecksumIEEE([]byte(name))
+	str := strconv.FormatUint(uint64(crc), 10) + "12345"
+	return "Аноним#" + str[:4]
+}
+
+func CompareEdits(src, res string) string {
+	dmp := diffmatchpatch.New()
+	src = html.EscapeString(src)
+	res = html.EscapeString(res)
+	diffs := dmp.DiffMain(src, res, false)
+
+	restxt := ""
+	for _, diff := range diffs {
+		class := ""
+		switch diff.Type {
+		case diffmatchpatch.DiffInsert:
+			class = "bg-emerald-200"
+		case diffmatchpatch.DiffDelete:
+			class = "bg-red-200"
+		default:
+			class = ""
+		}
+		restxt += fmt.Sprintf("<span class=\"%s\">%s</span>", class, diff.Text)
+	}
+	return restxt
+}
+
+func ConvertTime(tc time.Time) string {
+	loc, _ := time.LoadLocation("Europe/Moscow")
+	return tc.In(loc).Format("2006-01-02 15:04:05")
+}
+
+func ConvertEditToText(edit models.EditEntry) string {
+	isRev := "нет"
+	if edit.IsReviewed {
+		isRev = "да"
+	}
+
+	body := strings.ReplaceAll(edit.Body, "\n", "↵\n")
+	body = strings.ReplaceAll(body, "\t", "↹\t")
+
+	text := fmt.Sprintf("%s (%s) [%s] %s\n%s\nОтредактировано: %s", edit.Hangul, edit.Hanja, edit.Transcription, edit.HomonymicNumber, body, isRev)
+
+	return text
+}
+
+func GetEditGuide() string {
+	resp, err := http.Get("https://raw.githubusercontent.com/etsune/bkors/main/edit_guide.md")
+	if err != nil {
+		return ""
+	}
+
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ""
+	}
+
+	return string(data)
+
+	//extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
+	//p := parser.NewWithExtensions(extensions)
+	//doc := p.Parse(data)
+	//
+	//htmlFlags := html.CommonFlags | html.HrefTargetBlank
+	//opts := html.RendererOptions{Flags: htmlFlags}
+	//renderer := html.NewRenderer(opts)
+	//
+	//return string(markdown.Render(doc, renderer))
+}
+
+func DangerouslyIncludeHTML(s string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
+		_, err := io.WriteString(w, s)
+		return err
+	})
+}
+
+func GetMeta(pl *models.Placement) string {
+	return fmt.Sprintf("%d|%d|%d|%d|%s", pl.Volume, pl.Page, pl.Side, pl.Paragraph, pl.Coords)
 }
 
 func clearVline(txt string) string {

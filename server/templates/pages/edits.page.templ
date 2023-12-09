@@ -1,13 +1,76 @@
 package pages
 
 import (
+	"github.com/etsune/bkors/server/models"
+	"github.com/etsune/bkors/server/utils"
 	"github.com/etsune/bkors/server/templates"
 )
 
-templ EditsPage(p *PageOptions) {
-  @templates.Layout(p.user) {
-    <div class="">
-      Страница в разработке
-    </div>
-  }
+templ EditsPage(p *PageOptions, edits *[]models.DBEdit) {
+	@templates.Layout(p.user) {
+		for _, edit := range *edits {
+			@Edit(edit, (p.user != nil && p.user.IsAdmin))
+		}
+	}
+}
+
+templ Edit(edit models.DBEdit, isAdmin bool) {
+	<div class="py-2 px-4 border rounded-md">
+		<div class="flex flex-wrap gap-4 justify-between">
+			<div class="basis-full ml-2">
+				{ edit.Author },
+				<span class="text-zinc-400">{ utils.ConvertTime(edit.CreatedAt) } MSK, </span>
+				@EditStatus(edit.Status)
+			</div>
+			<div class="basis-full ml-2">
+				<img class="w-2/3 h-auto mt-4" src={ "/static/img/" + edit.Image }/>
+			</div>
+			<div class="basis-1/3 grow border border-dotted bg-gray-100 p-2 h-full whitespace-pre-wrap">
+				{ utils.ConvertEditToText(edit.Source) }
+			</div>
+			<div class="flex flex-col justify-evenly"><div>⟶</div></div>
+			<div class="basis-1/3 grow border border-dotted bg-gray-100 p-2 h-full whitespace-pre-wrap">
+				{ utils.ConvertEditToText(edit.Result) }
+			</div>
+			<div class="basis-full flex justify-center whitespace-pre-wrap mx-auto">
+				<div>
+					@utils.DangerouslyIncludeHTML(utils.CompareEdits(utils.ConvertEditToText(edit.Source), utils.ConvertEditToText(edit.Result)))
+				</div>
+			</div>
+		</div>
+		if edit.Status == 0 && isAdmin {
+			<div>
+				<button
+ 					class="border rounded-md border-emerald-500 p-1"
+ 					hx-target={ "#res" + edit.Id.Hex() }
+ 					hx-post={ "/edits/" + edit.Id.Hex() + "/approve" }
+ 					hx-swap="innerHTML"
+				>
+					Принять
+				</button>
+				<button
+ 					class="border rounded-md border-red-500 p-1"
+ 					hx-target={ "#res" + edit.Id.Hex() }
+ 					hx-post={ "/edits/" + edit.Id.Hex() + "/decline" }
+ 					hx-swap="innerHTML"
+				>
+					Отклонить
+				</button>
+				<div id={ "res" + edit.Id.Hex() }></div>
+			</div>
+		}
+	</div>
+}
+
+templ EditStatus(status models.EditStatus) {
+	switch status {
+		case models.StatusNew:
+			<span class="text-indigo-400">Новая</span>
+		case models.StatusApproved:
+			<span class="text-emerald-400">Принято</span>
+		case models.StatusDeclined:
+			<span class="text-red-400">Отклонено</span>
+		default:
+			<span class="">Неизвестный статус</span>
+	}
 }

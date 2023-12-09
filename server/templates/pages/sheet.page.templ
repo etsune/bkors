@@ -10,51 +10,51 @@ import (
 )
 
 templ SheetPage(p *PageOptions, sheet *models.DBPage, entries *[]models.DBEntry) {
-  @templates.Layout(p.user) {
-   // <div class="relative">
-     // <img class="w-full h-auto border" src={ "/static/png/" + sheet.File } />
-     // <div class="absolute top-[3726px] left-[277px] w-[1900px] h-[140px] border-4 hover:border-green-300"  @click="push"  ></div>
-   // </div>
-   <div class="flex flex-row ">
-   <div class="grow inline">
-   if sheet.Num > 1 {
-     <a class="transition m-2 hover:text-blue-500" href={ templ.URL("/page/bkors/" + strconv.Itoa(sheet.Num-1)) }>＜ Предыдущая</a>
-   }
-   ---
-   if sheet.Num < 1451 {
-     <a class="transition m-2 hover:text-blue-500" href={ templ.URL("/page/bkors/" + strconv.Itoa(sheet.Num+1)) }>Следующая ＞</a>
-   }
-   </div>
-    <a class="transition m-2 hover:text-blue-500 place-self-end" href={ templ.URL("/page-export/" + strconv.Itoa(sheet.Volume) + "/" + strconv.Itoa(sheet.Page) ) }>Экспорт</a>
-   </div>
-   <svg class="w-full border" viewBox={"0 0 " + strconv.Itoa(sheet.Width) + " " + strconv.Itoa(sheet.Height)} xmlns="http://www.w3.org/2000/svg">
-   <image href={ "/static/png/" + sheet.File } width={ strconv.Itoa(sheet.Width) } height={ strconv.Itoa(sheet.Height) } />
-   for _, entry := range *entries {
-     @entryBorders(entry)
-   }
-   </svg>
-   <hr />
-     for _, entry := range *entries {
-      <div id={"editor-"+entry.Id.Hex()} class="border rounded-md p-4">
-        <img class="w-2/3 h-auto mt-4" src={ "/static/img/" + entry.Image } />
-        @components.Editor(entry)
-      </div>
-     }
-  }
+	@templates.Layout(p.user) {
+		// <div class="relative">
+		// <img class="w-full h-auto border" src={ "/static/png/" + sheet.File } />
+		// <div class="absolute top-[3726px] left-[277px] w-[1900px] h-[140px] border-4 hover:border-green-300"  @click="push"  ></div>
+		// </div>
+		<div class="flex flex-row ">
+			<div class="grow inline">
+				if sheet.Num > 1 {
+					<a class="transition m-2 hover:text-blue-500" href={ templ.URL("/page/bkors/" + strconv.Itoa(sheet.Num-1)) }>＜ Предыдущая</a>
+				}
+				---
+				if sheet.Num < 1451 {
+					<a class="transition m-2 hover:text-blue-500" href={ templ.URL("/page/bkors/" + strconv.Itoa(sheet.Num+1)) }>Следующая ＞</a>
+				}
+			</div>
+			<a class="transition m-2 hover:text-blue-500 place-self-end" href={ templ.URL("/page-export/" + strconv.Itoa(sheet.Volume) + "/" + strconv.Itoa(sheet.Page)) }>Экспорт</a>
+		</div>
+		<svg class="w-full border" viewBox={ "0 0 " + strconv.Itoa(sheet.Width) + " " + strconv.Itoa(sheet.Height) } xmlns="http://www.w3.org/2000/svg">
+			<image href={ "/static/png/" + sheet.File } width={ strconv.Itoa(sheet.Width) } height={ strconv.Itoa(sheet.Height) }></image>
+			for _, entry := range *entries {
+				@entryBorders(entry)
+			}
+		</svg>
+		<hr/>
+		for _, entry := range *entries {
+			<div id={ "editor-" + entry.Id.Hex() } class="border rounded-md p-4">
+				<img class="w-2/3 h-auto mt-4" src={ "/static/img/" + entry.Image }/>
+				@components.Editor(entry, p.user)
+			</div>
+		}
+	}
 }
 
 templ entryBorders(e models.DBEntry) {
-  for _, coord := range strings.Split(e.Placement.Coords, ":") {
-    <a xlink:href={ "#editor-" + e.Id.Hex() } style="cursor: pointer">
-    <rect
-      x={ utils.GetCoords(coord, 1) }
-      y={ utils.GetCoords(coord, 2) }
-      width={ utils.GetCoords(coord, 3) }
-      height={ utils.GetCoords(coord, 4) }
-      fill="transparent"
-      stroke={ utils.GetRectColor(e.IsReviewed) }
-      stroke-width="2"
-    />
-    </a>
-  }
+	for _, coord := range strings.Split(e.Placement.Coords, ":") {
+		<a xlink:href={ "#editor-" + e.Id.Hex() } style="cursor: pointer">
+			<rect
+ 				x={ utils.GetCoords(coord, 1) }
+ 				y={ utils.GetCoords(coord, 2) }
+ 				width={ utils.GetCoords(coord, 3) }
+ 				height={ utils.GetCoords(coord, 4) }
+ 				fill="transparent"
+ 				stroke={ utils.GetRectColor(e.IsReviewed) }
+ 				stroke-width="2"
+			></rect>
+		</a>
+	}
 }

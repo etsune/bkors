@@ -25,9 +25,20 @@ func NewEntryService(ctx context.Context, col *mongo.Collection) *EntryService {
 	return &EntryService{col, ctx}
 }
 
+func (e *EntryService) GetEntry(entryId primitive.ObjectID) (models.DBEntry, error) {
+	var entry models.DBEntry
+	err := e.col.FindOne(e.ctx, bson.M{"_id": entryId}).Decode(&entry)
+	if err != nil {
+		return models.DBEntry{}, err
+	}
+
+	return entry, nil
+}
+
 func (e *EntryService) GetEntriesForPage(volume, page int) (*[]models.DBEntry, error) {
 	filter := bson.M{"placement.v": volume, "placement.pg": page}
-	cursor, err := e.col.Find(e.ctx, filter, options.Find().SetLimit(1000))
+	opts := options.Find().SetSort(bson.D{{"psort", 1}}).SetLimit(1000)
+	cursor, err := e.col.Find(e.ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}

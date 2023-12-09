@@ -7,8 +7,8 @@ import (
 )
 
 templ Search(entries *[]models.DBEntry, term string, p *PageOptions) {
-  @templates.Layout(p.user) {
+	@templates.Layout(p.user) {
 		@components.SearchBar(term)
-    @components.Entries(entries)
-  }
+		@components.Entries(entries, p.user)
+	}
 }

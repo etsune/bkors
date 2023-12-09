@@ -42,6 +42,7 @@ func main() {
 		authService:  services.NewAuthService(config),
 		userService:  services.NewUserService(context.TODO(), dbClient.Database("bkors").Collection("users"), config),
 		sheetService: services.NewSheetService(context.TODO(), dbClient.Database("bkors").Collection("pages")),
+		editService:  services.NewEditService(context.TODO(), dbClient.Database("bkors").Collection("edits"), dbClient.Database("bkors").Collection("entries")),
 	}
 
 	e.Use(SetRequestUser(handler.userService, &config))

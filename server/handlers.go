@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/etsune/bkors/server/templates/components"
+	"github.com/etsune/bkors/server/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"strconv"
 	"time"
@@ -18,6 +21,7 @@ type AppHandler struct {
 	authService  *services.AuthService
 	userService  *services.UserService
 	sheetService *services.SheetService
+	editService  *services.EditService
 }
 
 func (h *AppHandler) IndexPageHandler(c echo.Context) error {
@@ -53,17 +57,79 @@ func (h *AppHandler) DownloadPageHandler(c echo.Context) error {
 }
 
 func (h *AppHandler) EditsPageHandler(c echo.Context) error {
+	edits, err := h.editService.GetAll(false)
+	if err != nil {
+		return err
+	}
+
 	pageOptions := pages.NewPageOptions(getCtxUserdata(c))
-	return pages.EditsPage(pageOptions).Render(context.Background(), c.Response().Writer)
+	return pages.EditsPage(pageOptions, edits).Render(context.Background(), c.Response().Writer)
 }
 
-func (h *AppHandler) SheetPageHandler(c echo.Context) error {
+func (h *AppHandler) EditsPendingPageHandler(c echo.Context) error {
+	edits, err := h.editService.GetAll(true)
+	if err != nil {
+		return err
+	}
+
 	pageOptions := pages.NewPageOptions(getCtxUserdata(c))
+	return pages.EditsPage(pageOptions, edits).Render(context.Background(), c.Response().Writer)
+}
+
+func (h *AppHandler) SheetNextHandler(c echo.Context) error {
 	dict, numPar := c.Param("dict"), c.Param("num")
 
 	num, _ := strconv.Atoi(numPar)
 
-	sheet, err := h.sheetService.Get(dict, num)
+	fmt.Println(num)
+	sheet, err := h.sheetService.GetByNum(dict, num)
+	if err != nil {
+		return err
+	}
+
+	redirectUrl := fmt.Sprintf("/page/%s/%d/%d", dict, sheet.Volume, sheet.Page)
+
+	return c.Redirect(http.StatusSeeOther, redirectUrl)
+}
+
+func (h *AppHandler) ApproveEdit(c echo.Context) error {
+	user := getCtxUserdata(c)
+	if user == nil || !user.IsAdmin {
+		return c.String(http.StatusBadRequest, "user has no access")
+	}
+	editId := c.Param("id")
+
+	err := h.editService.Approve(editId)
+	if err != nil {
+		return err
+	}
+
+	return components.Ok().Render(context.Background(), c.Response().Writer)
+}
+
+func (h *AppHandler) DeclineEdit(c echo.Context) error {
+	user := getCtxUserdata(c)
+	if user == nil || !user.IsAdmin {
+		return c.String(http.StatusBadRequest, "user has no access")
+	}
+	editId := c.Param("id")
+
+	err := h.editService.SetEditStatus(editId, models.StatusDeclined)
+	if err != nil {
+		return err
+	}
+
+	return components.Ok().Render(context.Background(), c.Response().Writer)
+}
+
+func (h *AppHandler) SheetPageHandler(c echo.Context) error {
+	pageOptions := pages.NewPageOptions(getCtxUserdata(c))
+	dict, volPar, pagePar := c.Param("dict"), c.Param("vol"), c.Param("page")
+
+	vol, _ := strconv.Atoi(volPar)
+	page, _ := strconv.Atoi(pagePar)
+
+	sheet, err := h.sheetService.Get(dict, vol, page)
 	if err != nil {
 		return err
 	}
@@ -74,6 +140,38 @@ func (h *AppHandler) SheetPageHandler(c echo.Context) error {
 	}
 
 	return pages.SheetPage(pageOptions, sheet, entries).Render(context.Background(), c.Response().Writer)
+}
+
+func (h *AppHandler) CreateEdit(c echo.Context) error {
+	edit := new(models.EditEntry)
+	if err := c.Bind(edit); err != nil {
+		return err
+	}
+	entryId, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		return err
+	}
+
+	var username string
+	var user *models.DBUser
+	if user = getCtxUserdata(c); user != nil {
+		username = user.Username
+	} else {
+		username = utils.GetAnonymName(c.RealIP())
+	}
+
+	editId, err := h.editService.CreateEdit(edit, entryId, username)
+	if err != nil {
+		return c.HTML(http.StatusOK, err.Error())
+	}
+
+	if user != nil && user.HasAutoApprove {
+		if err = h.editService.Approve(editId.Hex()); err != nil {
+			return err
+		}
+	}
+
+	return components.OkWithMsg("Правка отправлена").Render(context.Background(), c.Response().Writer)
 }
 
 func (h *AppHandler) ExportPageToTxt(c echo.Context) error {

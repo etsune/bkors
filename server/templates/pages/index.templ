@@ -6,11 +6,19 @@ import (
 )
 
 templ Index(p *PageOptions) {
-  @templates.Layout(p.user) {
+	@templates.Layout(p.user) {
 		@components.SearchBar("")
 		<div>
-			Большой корейско-русский словарь в двух томах, под редакцией Л.Б. Никольского и Цой Ден Ху, М: 1976<br />
+			Большой корейско-русский словарь в двух томах, под редакцией Л.Б. Никольского и Цой Ден Ху, М: 1976
+			<br/>
 			Обратите внимание, что в словаре используется северокорейская орфография.
 		</div>
-  }
+		<div>
+			//@utils.DangerouslyIncludeHTML(utils.GetEditGuide())
+			//<pre>
+			//{ utils.GetEditGuide() }
+			//</pre>
+			Правила редактирования: <a class="text-blue-500" href="https://github.com/etsune/bkors/blob/main/edit_guide.md" target="_blank">github.com/etsune/bkors/blob/main/edit_guide.md</a>
+		</div>
+	}
 }

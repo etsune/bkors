@@ -3,24 +3,24 @@ package components
 import "github.com/etsune/bkors/server/models"
 
 var menu = [][2]string{
-    {"Github", "https://github.com/etsune/bkors"},
-    {"Обсуждения", "https://github.com/etsune/bkors/discussions"},
-    {"Правки", "/edits"},
-    {"Скачать", "/download"},
-  }
+	{"Github", "https://github.com/etsune/bkors"},
+	{"Обсуждения", "https://github.com/etsune/bkors/discussions"},
+	{"Правки", "/edits"},
+	{"Скачать", "/download"},
+}
 
 templ Menu(u *models.DBUser) {
-  <div class="border-b-2 inline">
-    <!-- 朝露大辭典 -->
-    <a class="text-4xl mr-4 text-gray-700" href="/" lang="kr">朝露大辭典</a>
-    for _, item := range menu {
-      <a class="transition m-2 hover:text-blue-500" href={ templ.URL(item[1]) }>{ item[0] }</a>
-    }
-    if u == nil {
-      <a class="transition m-2 hover:text-blue-500" href="/login">Войти</a>
-    } else {
-      <span class="m-2">User: { u.Username }</span>
-      <a class="transition hover:text-blue-500" href="/logout">(Выйти)</a>
-    }
-  </div>
+	<div class="border-b-2 inline">
+		<!-- 朝露大辭典 -->
+		<a class="text-4xl mr-4 text-gray-700" href="/" lang="kr">朝露大辭典</a>
+		for _, item := range menu {
+			<a class="transition m-2 hover:text-blue-500" href={ templ.URL(item[1]) }>{ item[0] }</a>
+		}
+		if u == nil {
+			<a class="transition m-2 hover:text-blue-500" href="/login">Войти</a>
+		} else {
+			<span class="m-2">User: { u.Username }</span>
+			<a class="transition hover:text-blue-500" href="/logout">(Выйти)</a>
+		}
+	</div>
 }

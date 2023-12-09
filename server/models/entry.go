@@ -6,6 +6,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type EditStatus int
+
+const (
+	StatusNew EditStatus = iota
+	StatusApproved
+	StatusDeclined
+)
+
 type DictEntry struct {
 	Hangul          string `bson:"hangul"`
 	Hanja           string `bson:"hanja"`
@@ -56,6 +64,28 @@ type DBPage struct {
 	Num        int                `bson:"num"`
 }
 
+type EditEntry struct {
+	IsReviewed      bool   `bson:"is_reviwed" form:"is_reviewed"`
+	Hangul          string `bson:"hangul" form:"hangul"`
+	Hanja           string `bson:"hanja" form:"hanja"`
+	HomonymicNumber string `bson:"hn" form:"hn"`
+	Transcription   string `bson:"ts" form:"ts"`
+	Body            string `bson:"body" form:"body"`
+	Meta            string `bson:"meta" form:"meta"`
+}
+
+type DBEdit struct {
+	Id        primitive.ObjectID `bson:"_id"`
+	EntryId   primitive.ObjectID `bson:"entry_id"`
+	Status    EditStatus         `bson:"status"`
+	Source    EditEntry          `bson:"source"`
+	Result    EditEntry          `bson:"result"`
+	Author    string             `bson:"author"`
+	Approver  string             `bson:"approver"`
+	Image     string             `bson:"image"`
+	CreatedAt time.Time          `bson:"created_at"`
+}
+
 // Body - loan source , senses-examples(kor, rus)
 
 type Page struct {
@@ -73,10 +103,11 @@ type Edit struct {
 }
 
 type DBUser struct {
-	Id        primitive.ObjectID `bson:"_id"`
-	Username  string             `bson:"username"`
-	Password  string             `bson:"password"`
-	IsAdmin   bool               `bson:"is_admin"`
-	CreatedAt time.Time          `bson:"created_at"`
-	UpdatedAt time.Time          `bson:"updated_at"`
+	Id             primitive.ObjectID `bson:"_id"`
+	Username       string             `bson:"username"`
+	Password       string             `bson:"password"`
+	IsAdmin        bool               `bson:"is_admin"`
+	HasAutoApprove bool               `bson:"aappr"`
+	CreatedAt      time.Time          `bson:"created_at"`
+	UpdatedAt      time.Time          `bson:"updated_at"`
 }

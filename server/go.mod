@@ -6,6 +6,7 @@ require (
 	github.com/a-h/templ v0.2.476
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/labstack/echo/v4 v4.11.1
+	github.com/sergi/go-diff v1.3.1
 	github.com/spf13/viper v1.17.0
 	go.mongodb.org/mongo-driver v1.13.0
 	golang.org/x/crypto v0.14.0

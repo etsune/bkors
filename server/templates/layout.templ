@@ -10,17 +10,18 @@ import (
 // options *TemplateOptions
 
 templ Layout(u *models.DBUser) {
-	<!doctype html>
+	<!DOCTYPE html>
 	<html>
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>БКоРС — проект оцифровки Большого корейско-русского словаря</title>
-			<link rel="icon" type="image/png" href="/static/favicon1.png" />
-			<link rel="preconnect" href="https://fonts.googleapis.com"></link>
-			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin></link>
-			<link href="https://fonts.googleapis.com/css2?family=Exo+2:ital@0;1&family=Nanum+Gothic&family=Nanum+Myeongjo&display=swap" rel="stylesheet"></link>
+			<link rel="icon" type="image/png" href="/static/favicon1.png"/>
+			<link rel="preconnect" href="https://fonts.googleapis.com"/>
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+			<link href="https://fonts.googleapis.com/css2?family=Exo+2:ital@0;1&family=Nanum+Gothic&family=Nanum+Myeongjo&display=swap" rel="stylesheet"/>
 			<script src="https://cdn.tailwindcss.com"></script>
+			<script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
 			<script>
 				tailwind.config = {
 					theme: {
@@ -35,10 +36,8 @@ templ Layout(u *models.DBUser) {
 		</head>
 		<body>
 			<div class="container flex flex-col gap-4 p-4 mx-auto my-10 max-w-6xl md:leading-relaxed font-display">
-				
 				@components.Menu(u)
 				{ children... }
-
 			</div>
 		</body>
 	</html>

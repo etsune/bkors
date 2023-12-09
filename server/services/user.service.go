@@ -88,9 +88,11 @@ func (s *UserService) RegisterUser(username, password string) (*http.Cookie, err
 	}
 
 	user := &models.DBUser{
-		Id:       primitive.NewObjectID(),
-		Username: username,
-		Password: hashedPassword,
+		Id:             primitive.NewObjectID(),
+		Username:       username,
+		Password:       hashedPassword,
+		IsAdmin:        false,
+		HasAutoApprove: false,
 	}
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = user.CreatedAt
