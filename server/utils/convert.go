@@ -7,6 +7,7 @@ import (
 	"html"
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -54,6 +55,106 @@ func CompareEdits(src, res string) string {
 		restxt += fmt.Sprintf("<span class=\"%s\">%s</span>", class, diff.Text)
 	}
 	return restxt
+}
+
+func ConvertBodyToContent(input string) []*Content {
+	// Regular expression to match tags
+	tagPattern := regexp.MustCompile(`(\*\*)(.+?)\*\*|(__)(.+?)__`)
+
+	// Split the input based on tag matches
+	matches := tagPattern.FindAllStringSubmatchIndex(input, -1)
+
+	var result []*Content
+	prevEnd := 0
+
+	for _, match := range matches {
+		// Extract text before the current tag
+		if match[0] > prevEnd {
+			result = append(result, &Content{
+				Text: input[prevEnd:match[0]],
+			})
+		}
+
+		if match[2] == -1 && match[4] == -1 {
+			match[2] = match[6]
+			match[3] = match[7]
+			match[4] = match[8]
+			match[5] = match[9]
+		}
+
+		// Extract the tag and content
+		tag := input[match[2]:match[3]]
+		innerContent := input[match[4]:match[5]]
+
+		switch tag {
+		case "**":
+			tag = "i"
+		case "__":
+			tag = "a"
+		}
+
+		// Parse the inner content recursively
+		contentNode := ConvertBodyToContent(innerContent)
+
+		node := &Content{
+			Tag:  tag,
+		}
+
+		if len(contentNode) == 1 {
+			node.Text = contentNode[0].Text
+		} else if len(contentNode) > 1 {
+			node.Content = contentNode
+		} else {
+			node.Text = innerContent
+		}
+		
+		result = append(result, node)
+
+		// Update the end of the last processed tag
+		prevEnd = match[1]
+	}
+
+	// Add remaining text after the last tag
+	if prevEnd < len(input) {
+		result = append(result, &Content{
+			Text: input[prevEnd:],
+		})
+	}
+
+	return result
+}
+
+func CompareEditsAsContent(src, res string) []*Content {
+	dmp := diffmatchpatch.New()
+	src = html.EscapeString(src)
+	res = html.EscapeString(res)
+	diffs := dmp.DiffMain(src, res, false)
+
+	resContent := make([]*Content, 0)
+	for _, diff := range diffs {
+		class := ""
+		switch diff.Type {
+		case diffmatchpatch.DiffInsert:
+			class = "bg-emerald-200"
+		case diffmatchpatch.DiffDelete:
+			class = "bg-red-200"
+		default:
+			class = ""
+		}
+
+		resContent = append(resContent, &Content{
+			Class: class,
+			Text: diff.Text,
+		})
+	}
+	return resContent
+}
+
+type Content struct {
+	Tag string
+	Class string
+	Text string
+	Content []*Content
 }
 
 func ConvertTime(tc time.Time) string {

@@ -2,6 +2,7 @@ package components
 
 import (
 	"github.com/etsune/bkors/server/models"
+	"github.com/etsune/bkors/server/utils"
 	"strconv"
 )
 
@@ -13,10 +14,47 @@ script showEditor(id string) {
     }
 }
 
+templ Content(content []*utils.Content, count int) {
+	if count > 5 {
+		return
+	}
+	for _, cont := range content {
+		if len(cont.Content) > 0 {
+			if cont.Tag == "i" {
+				<span class={ "inline whitespace-pre-line text-emerald-600 italic " }>
+					@Content(cont.Content, count + 1)
+				</span>
+			} else if cont.Tag == "a" {
+				<a href={ templ.URL("/search?s=" + cont.Text + "#" + cont.Text) } class={ "inline whitespace-pre-line text-blue-500 " + cont.Class }>
+					@Content(cont.Content, count + 1)
+				</a>
+			} else {
+				<span class={ "inline whitespace-pre-line " + cont.Class }>
+					@Content(cont.Content, count + 1)
+				</span>
+			}
+		} else {
+			if cont.Tag == "i" {
+				<span class={ "inline whitespace-pre-line text-emerald-600 italic " }>
+					{ cont.Text }
+				</span>
+			} else if cont.Tag == "a" {
+				<a href={ templ.URL("/search?s=" + cont.Text + "#" + cont.Text) } class={ "inline whitespace-pre-line text-blue-500 " + cont.Class }>
+					{ cont.Text }
+				</a>
+			} else {
+				<span class={ "inline whitespace-pre-line " + cont.Class }>
+					{ cont.Text }
+				</span>
+			}
+		}
+	}
+}
+
 templ Entry(entry models.DBEntry, u *models.DBUser) {
 	<div class={ "border rounded-md p-4 text-base relative", templ.KV("border-l-orange-500 border-l-2", !entry.IsReviewed) } lang="kr">
 		//
-		<div class="pb-3">
+		<div id={ entry.Entry.Hangul } class="pb-3">
 			<div class="whitespace-nowrap text-lg/none">
 				<div class="inline-block font-semibold">
 					<span>{ entry.Entry.Hangul }</span>
@@ -30,7 +68,9 @@ templ Entry(entry models.DBEntry, u *models.DBUser) {
 					<span class="text-xl text-zinc-500">〔{ entry.Entry.Hanja }〕</span>
 				}
 			</div>
-			<div class="whitespace-pre-wrap">{ entry.Entry.Body }</div>
+			<div class="whitespace-pre-wrap">
+				@Content(utils.ConvertBodyToContent(entry.Entry.Body), 0)
+			</div>
 			<div class="absolute top-3 right-2">
 				//<div class="">@IconPage()</div>
 				<span class="cursor-pointer transition m-2 hover:text-blue-500" onCLick={ showEditor("editor-" + entry.Id.Hex()) }>Editor</span>

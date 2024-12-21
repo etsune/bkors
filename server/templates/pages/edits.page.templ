@@ -4,6 +4,7 @@ import (
 	"github.com/etsune/bkors/server/models"
 	"github.com/etsune/bkors/server/utils"
 	"github.com/etsune/bkors/server/templates"
+	"github.com/etsune/bkors/server/templates/components"
 )
 
 templ EditsPage(p *PageOptions, edits *[]models.DBEdit) {
@@ -34,7 +35,7 @@ templ Edit(edit models.DBEdit, isAdmin bool) {
 			</div>
 			<div class="basis-full flex justify-center whitespace-pre-wrap mx-auto">
 				<div>
-					@utils.DangerouslyIncludeHTML(utils.CompareEdits(utils.ConvertEditToText(edit.Source), utils.ConvertEditToText(edit.Result)))
+					@components.Content(utils.CompareEditsAsContent(utils.ConvertEditToText(edit.Source), utils.ConvertEditToText(edit.Result)), 0)
 				</div>
 			</div>
 		</div>
